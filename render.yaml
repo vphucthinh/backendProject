@@ -3,11 +3,11 @@ services:
     name: express-api
     env: node
     buildCommand: 'npm install'
-    startCommand: 'npm start'
+    startCommand: 'pm2-runtime start ecosystem.config.cjs --env production'
     envVars:
       - key: NODE_ENV
-        value: production
+        value: "production"
       - key: PORT
-        value: 4000
+        value: "4000"
       - key: DB_URI
-        value: mongodb+srv://foodproject:1234567890@cluster0.tfvzwht.mongodb.net/foodproject
+        value: "mongodb+srv://foodproject:1234567890@cluster0.tfvzwht.mongodb.net/foodproject"

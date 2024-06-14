@@ -9,6 +9,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import 'dotenv/config';
 import dotenv from 'dotenv';
+import morgan from 'morgan'
 
 
 
@@ -16,6 +17,7 @@ import dotenv from 'dotenv';
 // App config
 const app = express();
 const port = 4000;
+app.use(morgan('dev'));
 dotenv.config();
 
 // Middleware
