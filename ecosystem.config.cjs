@@ -2,8 +2,8 @@ module.exports = {
     apps: [
         {
             name: "backend",
-            script: "/opt/render/project/server.js", // Replace with the full path to your main entry file
-            watch: true, // Enable if you want PM2 to watch for file changes and restart the app
+            script: "/server.js", // Replace with the full path to your main entry file
+            watch: false, // Enable if you want PM2 to watch for file changes and restart the app
             instances: 1, // Number of instances to launch, typically 1 for most applications
             autorestart: true, // Automatically restart the app if it crashes
             max_memory_restart: "1G", // Restart if the memory usage exceeds this limit
