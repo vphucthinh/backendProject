@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: express-api
+    env: node
+    buildCommand: 'npm install'
+    startCommand: 'npm start'
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: DB_URI
+        value: mongodb+srv://foodproject:1234567890@cluster0.tfvzwht.mongodb.net/foodproject
