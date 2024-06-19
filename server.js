@@ -10,6 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import 'dotenv/config';
 import dotenv from 'dotenv';
 import morgan from 'morgan'
+import profileRouter from "./routes/profileRoute.js";
 
 
 
@@ -36,9 +37,22 @@ const swaggerOptions = {
             version: '1.0.0',
             description: 'A simple Express API application with Swagger documentation',
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [{
+            bearerAuth: []
+        }],
         servers: [
             {
-                url: `http://localhost:${port}`,
+                url: process.env.NODE_ENV === 'production' ? 'https://backendproject-qrnu.onrender.com' : `http://localhost:${port}`,
+                description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
             },
         ],
     },
@@ -54,6 +68,7 @@ app.use('/images', express.static('uploads'));
 app.use('/api/user', userRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/profile', profileRouter)
 
 app.get('/', (req, res) => {
     res.send('API Working');
