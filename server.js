@@ -11,13 +11,18 @@ import 'dotenv/config';
 import dotenv from 'dotenv';
 import morgan from 'morgan'
 import profileRouter from "./routes/profileRoute.js";
+import chatRoomRouter from "./routes/chatRoomRoute.js";
+import socketio from "express/lib/application.js";
+import WebSockets from "./utils/webSocket.js";
+import {Server} from "socket.io";
+import * as http from "node:http";
 
 
 
 
 // App config
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 app.use(morgan('dev'));
 dotenv.config();
 
@@ -68,13 +73,24 @@ app.use('/images', express.static('uploads'));
 app.use('/api/user', userRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
-app.use('/api/profile', profileRouter)
+app.use('/api/profile', profileRouter);
+app.use('/api/chat', chatRoomRouter);
 
 app.get('/', (req, res) => {
     res.send('API Working');
 });
 
+const server = http.createServer(app);
+
+// Create socket connection
+const io = new Server(server);
+global.io = io;
+io.on('connection', (socket) => {
+    console.log('New socket connection established:', socket.id);
+    WebSockets.connection(socket);
+});
+
 // Start the server
-app.listen(port, () => {
-    console.log(`Server Started on http://localhost:${port}`);
+server.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
 });

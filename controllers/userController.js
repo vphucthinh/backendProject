@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import UserModel from "../models/userModel.js";
 
 // Utility function to create a JWT token
 const createToken = (id) => {
@@ -104,4 +105,13 @@ const getProfile = async (req, res) => {
     }
 };
 
-export { loginUser, registerUser, getProfile };
+const getUserByIds = async function (ids) {
+    try {
+        const users = await UserModel.find({ _id: { $in: ids } });
+        return users;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export { loginUser, registerUser, getProfile, getUserByIds };
