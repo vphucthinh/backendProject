@@ -1,5 +1,11 @@
 import express from 'express';
-import {getProfile, loginUser, registerUser} from '../controllers/userController.js';
+import UserController from "../controllers/UserController.js";
+import {makeInvoker} from "awilix-express";
+
+const api = makeInvoker((container) => ({
+    registerUser: (req, res) => container.userController.registerUser(req, res),
+    loginUser: (req, res) => container.userController.loginUser(req, res),
+}));
 
 const userRouter = express.Router();
 
@@ -106,7 +112,7 @@ const userRouter = express.Router();
  *                   type: string
  *                   example: "Some error happened"
  */
-userRouter.post("/register", registerUser);
+userRouter.post("/register", api('registerUser'));
 
 /**
  * @swagger
@@ -179,7 +185,7 @@ userRouter.post("/register", registerUser);
  *                   type: string
  *                   example: "Some error happened"
  */
-userRouter.post("/login", loginUser);
+userRouter.post("/login", api("loginUser"));
 
 
 

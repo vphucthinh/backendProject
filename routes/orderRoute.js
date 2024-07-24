@@ -1,6 +1,14 @@
 import express from "express"
 import authMiddleware from "../middleware/auth.js"
-import { listOrders, placeOrder, updateStatus, userOrders, verifyOrder } from "../controllers/orderController.js"
+import {makeInvoker} from "awilix-express";
+
+const api = makeInvoker((container) => ({
+    placeOrder: (req, res) => container.orderController.placeOrder(req, res),
+    verifyOrder: (req, res) => container.orderController.verifyOrder(req, res),
+    userOrders: (req, res) => container.orderController.userOrders(req, res),
+    listOrders: (req, res) => container.orderController.listOrders(req, res),
+    updateStatus: (req, res) => container.orderController.updateStatus(req, res),
+}));
 
 const orderRouter = express.Router();
 
@@ -141,7 +149,7 @@ const orderRouter = express.Router();
  *                   example: "Bad request"
  */
 
-orderRouter.post("/place", authMiddleware, placeOrder);
+orderRouter.post("/place", authMiddleware, api("placeOrder"));
 
 /**
  * @swagger
@@ -191,7 +199,7 @@ orderRouter.post("/place", authMiddleware, placeOrder);
  *                   example: "Bad request"
  */
 
-orderRouter.post("/verify", authMiddleware, verifyOrder);
+orderRouter.post("/verify", authMiddleware, api("verifyOrder"));
 
 /**
  * @swagger
@@ -221,7 +229,7 @@ orderRouter.post("/verify", authMiddleware, verifyOrder);
  *                 $ref: '#/components/schemas/Order'
  */
 
-orderRouter.post("/userorders", authMiddleware, userOrders);
+orderRouter.post("/userorders", authMiddleware, api("userOrders"));
 
 /**
  * @swagger
@@ -242,7 +250,7 @@ orderRouter.post("/userorders", authMiddleware, userOrders);
  *                 $ref: '#/components/schemas/Order'
  */
 
-orderRouter.get("/list", authMiddleware, listOrders);
+orderRouter.get("/list", authMiddleware, api("listOrders"));
 
 /**
  * @swagger
@@ -294,7 +302,7 @@ orderRouter.get("/list", authMiddleware, listOrders);
  *                   example: "Bad request"
  */
 
-orderRouter.post("/status", authMiddleware, updateStatus);
+orderRouter.post("/status", authMiddleware, api("updateStatus"));
 
 
 export default orderRouter;

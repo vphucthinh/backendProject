@@ -1,8 +1,12 @@
-import {getProfile} from "../controllers/userController.js";
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
+import {makeInvoker} from "awilix-express";
 
 const profileRouter = express.Router();
+
+const api = makeInvoker((container) => ({
+    getProfile: (req, res) => container.userController.getProfile(req, res),
+}));
 
 /**
  * @swagger
@@ -100,6 +104,6 @@ const profileRouter = express.Router();
  */
 
 
-profileRouter.get("/me", authMiddleware, getProfile);
+profileRouter.get("/me", authMiddleware,api("getProfile") );
 
 export default profileRouter;

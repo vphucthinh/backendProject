@@ -12,7 +12,6 @@ import dotenv from 'dotenv';
 import morgan from 'morgan'
 import profileRouter from "./routes/profileRoute.js";
 import chatRoomRouter from "./routes/chatRoomRoute.js";
-import socketio from "express/lib/application.js";
 import WebSockets from "./utils/webSocket.js";
 import {Server} from "socket.io";
 import * as http from "node:http";
@@ -56,7 +55,7 @@ const swaggerOptions = {
         }],
         servers: [
             {
-                url: process.env.NODE_ENV === 'production' ? 'https://backendproject-qrnu.onrender.com' : `http://localhost:${port}`,
+                url: process.env.NODE_ENV === 'production' ? 'https://backendproject-webanddatabase.onrender.com/' : `http://localhost:${port}`,
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
             },
         ],

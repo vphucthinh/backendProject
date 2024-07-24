@@ -1,7 +1,6 @@
 import makeValidation from "@withvoid/make-validation";
 import ChatRoomModel from "../models/chatRoomModel.js";
 import ChatMessageModel from "../models/chatMessageModel.js";
-import {getUserByIds} from "./userController.js";
 import mongoose, {isValidObjectId} from "mongoose";
 import userModel from "../models/userModel.js";
 
