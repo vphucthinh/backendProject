@@ -22,11 +22,11 @@ export const routes = (app) => {
         next();
     });
 
-    // app.use('/api/food', foodRouter);
-    // app.use('/images', expressStatic('uploads'));
-    app.use('/api/user', userRouter);
-    // app.use('/api/cart', cartRouter);
-    // app.use('/api/order', orderRouter);
-    // app.use('/api/profile', profileRouter);
-    // app.use('/api/chat', chatRoomRouter);
+    app.use('/api/food', foodRouter);
+    app.use('/images', expressStatic('uploads'));
+    app.use('/api/v1/user', userRouter);
+    app.use('/api/v1/cart', cartRouter);
+    app.use('/api/v1/order', orderRouter);
+    // app.use('/api/v1/profile', profileRouter);
+    // app.use('/api/v1/chat', chatRoomRouter);
 };

@@ -89,7 +89,7 @@ class OrderController {
      */
     async updateStatus(req, res) {
         try {
-            const result = await orderService.updateOrderStatus(req.body.orderId, req.body.status);
+            const result = await this.service.updateOrderStatus(req.body.orderId, req.body.status);
             res.json(result);
         } catch (error) {
             console.log(error);
