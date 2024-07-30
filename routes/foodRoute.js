@@ -1,7 +1,14 @@
 import express from 'express';
-import { addFood, listFood, removeFood } from '../controllers/foodController.js';
 import multer from "multer";
 import authMiddleware from "../middleware/auth.js";
+import {makeInvoker} from "awilix-express";
+
+const foodController = makeInvoker((container) => ({
+    addFood: (req, res) => container.foodController.addFood(req, res),
+    removeFood: (req, res) => container.foodController.removeFood(req, res),
+    listFood: (req, res) => container.foodController.listFood(req, res),
+    updateFood: (req, res) => container.foodController.updateFood(req, res),
+}));
 
 const foodRouter = express.Router();
 
@@ -64,7 +71,7 @@ const upload = multer({ storage: storage });
 
 /**
  * @swagger
- * /api/food/add:
+ * /api/v1/food/add:
  *   post:
  *     summary: Adds a new food item
  *     tags: [Food]
@@ -123,11 +130,11 @@ const upload = multer({ storage: storage });
  *                   example: "Bad request"
  */
 
-foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
+foodRouter.post("/add", authMiddleware, upload.single("image"), foodController("addFood"));
 
 /**
  * @swagger
- * /api/food/list:
+ * /api/v1/food/list:
  *   get:
  *     summary: Returns the list of all the food items
  *     tags: [Food]
@@ -170,12 +177,12 @@ foodRouter.post("/add", authMiddleware, upload.single("image"), addFood);
  *                   example: "Bad request"
  */
 
-foodRouter.get("/list", authMiddleware, listFood);
+foodRouter.get("/list", authMiddleware, foodController("listFood"));
 
 /**
  * @swagger
- * /api/food/remove:
- *   post:
+ * /api/v1/food/remove:
+ *   delete:
  *     summary: Removes a food item
  *     tags: [Food]
  *     security:
@@ -220,6 +227,56 @@ foodRouter.get("/list", authMiddleware, listFood);
  *                   example: "Bad request"
  */
 
-foodRouter.post("/remove", authMiddleware, removeFood);
+foodRouter.delete("/remove", authMiddleware, foodController("removeFood"));
+
+/**
+ * @swagger
+ * /api/v1/food/update:
+ *   put:
+ *     summary: update a food item
+ *     tags: [Food]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: The food item was successfully updated
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+foodRouter.put("/remove", authMiddleware, foodController("updateFood"));
 
 export default foodRouter;

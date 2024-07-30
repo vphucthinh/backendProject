@@ -2,7 +2,7 @@ import express from "express"
 import authMiddleware from "../middleware/auth.js"
 import {makeInvoker} from "awilix-express";
 
-const api = makeInvoker((container) => ({
+const orderController = makeInvoker((container) => ({
     placeOrder: (req, res) => container.orderController.placeOrder(req, res),
     verifyOrder: (req, res) => container.orderController.verifyOrder(req, res),
     userOrders: (req, res) => container.orderController.userOrders(req, res),
@@ -102,7 +102,7 @@ const orderRouter = express.Router();
 
 /**
  * @swagger
- * /api/order/place:
+ * /api/v1/order/place:
  *   post:
  *     summary: Places a new order
  *     tags: [Orders]
@@ -149,11 +149,11 @@ const orderRouter = express.Router();
  *                   example: "Bad request"
  */
 
-orderRouter.post("/place", authMiddleware, api("placeOrder"));
+orderRouter.post("/place", authMiddleware, orderController("placeOrder"));
 
 /**
  * @swagger
- * /api/order/verify:
+ * /api/v1/order/verify:
  *   post:
  *     summary: Verifies an order
  *     tags: [Orders]
@@ -199,11 +199,11 @@ orderRouter.post("/place", authMiddleware, api("placeOrder"));
  *                   example: "Bad request"
  */
 
-orderRouter.post("/verify", authMiddleware, api("verifyOrder"));
+orderRouter.post("/verify", authMiddleware, orderController("verifyOrder"));
 
 /**
  * @swagger
- * /api/order/userorders:
+ * /api/v1/order/userorders:
  *   post:
  *     summary: Returns the orders of a user
  *     tags: [Orders]
@@ -229,11 +229,11 @@ orderRouter.post("/verify", authMiddleware, api("verifyOrder"));
  *                 $ref: '#/components/schemas/Order'
  */
 
-orderRouter.post("/userorders", authMiddleware, api("userOrders"));
+orderRouter.post("/userorders", authMiddleware, orderController("userOrders"));
 
 /**
  * @swagger
- * /api/order/list:
+ * /api/v1/order/list:
  *   get:
  *     summary: Returns the list of all orders
  *     tags: [Orders]
@@ -250,12 +250,12 @@ orderRouter.post("/userorders", authMiddleware, api("userOrders"));
  *                 $ref: '#/components/schemas/Order'
  */
 
-orderRouter.get("/list", authMiddleware, api("listOrders"));
+orderRouter.get("/list", authMiddleware, orderController("listOrders"));
 
 /**
  * @swagger
- * /api/order/status:
- *   post:
+ * /api/v1/order/status:
+ *   put:
  *     summary: Updates the status of an order
  *     tags: [Orders]
  *     security:
@@ -302,7 +302,7 @@ orderRouter.get("/list", authMiddleware, api("listOrders"));
  *                   example: "Bad request"
  */
 
-orderRouter.post("/status", authMiddleware, api("updateStatus"));
+orderRouter.put("/status", authMiddleware, orderController("updateStatus"));
 
 
 export default orderRouter;

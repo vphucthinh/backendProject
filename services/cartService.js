@@ -56,16 +56,30 @@ class CartService extends BaseService  {
      * @param {Object} req - The request object containing userId
      * @param {Object} res - The response object
      */
-     getCart = async (req, res) => {
+    getCart = async (req, res) => {
         try {
-            const userData = await this.repo.findById(req.body.userId);
+            // Get the userId from the URL parameters
+            const { userId } = req.params;
+
+            // Find the user by ID
+            const userData = await this.repo.findById(userId);
+
+            // If the user is not found, return a 404 error
+            if (!userData) {
+                return res.status(404).json({ success: false, message: 'User not found' });
+            }
+
+            // Extract the cart data from the user data
             const cartData = userData.cartData;
+
+            // Return the cart data
             res.status(200).json({ success: true, cartData });
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ success: false, message: "Error" });
+            // Handle any errors that occur during the process
+            console.error(error);
+            res.status(500).json({ success: false, message: 'Error' });
         }
-    }
+    };
 
 }
 

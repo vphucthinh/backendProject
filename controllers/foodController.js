@@ -2,7 +2,7 @@ import fs from 'fs';
 
 class FoodController {
     constructor({ foodService }) {
-        this.foodService = foodService;
+        this.service = foodService;
     }
 
     /**
@@ -13,10 +13,10 @@ class FoodController {
      */
     addFood = async (req, res) => {
         try {
-            await this.foodService.addFood(req, res);
+            await this.service.addFood(req, res);
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -28,10 +28,10 @@ class FoodController {
      */
     listFood = async (req, res) => {
         try {
-            await this.foodService.listFood(req, res);
+            await this.service.listFood(req, res);
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -43,10 +43,19 @@ class FoodController {
      */
     removeFood = async (req, res) => {
         try {
-            await this.foodService.removeFood(req, res);
+            await this.service.removeFood(req, res);
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
+        }
+    }
+
+    updateFood = async (req, res) => {
+        try {
+            await this.service.updateFood(req, res);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 }

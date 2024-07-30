@@ -128,6 +128,50 @@ class UserService extends BaseService {
         }
     }
 
+    async updateUserProfile(userId, updateData) {
+        try {
+            // Update the user profile and return the updated document
+            const profile = await this.repo.findOneAndUpdate(
+                { _id: userId },
+                { $set: updateData },
+                { new: true, runValidators: true }
+            );
+
+            // If the profile is not found, return null
+            if (!profile) {
+                throw new Error('User not found');
+
+            }
+
+            return profile;
+        } catch (error) {
+            // Handle any errors that occur during the update process
+            console.error(error);
+            throw error;
+        }
+    }
+
+
+    async deleteUser(id) {
+        try {
+            // Find the user by ID
+            const user = await this.repo.findOne({ _id: id });
+
+            // If the user is not found, return a 404 response
+            if (!user) {
+                throw new Error("User does not exist");
+            }
+
+            // Delete the user
+            await this.repo.deleteOne({ _id: id });
+
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+
 }
 
 export default UserService;

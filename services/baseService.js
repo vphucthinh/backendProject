@@ -65,6 +65,18 @@ class BaseService {
     delete(id) {
         return this.repo.delete(id);
     }
+
+    /**
+     * @description Retrieve multiple documents from the Model with the provided query
+     * @param {object} query - Query to be performed on the Model
+     * @param {object} [projection] - Optional: Fields to return or not return from query
+     * @param {object} [sort] - Optional argument to sort data
+     * @param {object} [options] - Optional options to provide query
+     * @returns {Promise} Returns the results of the query
+     */
+    find(query, projection = { __v: 0 }, sort = { _id: 1 }, options = { lean: true }) {
+        return this.repo.find(query, projection, sort, options);
+    }
 }
 
 export default BaseService;

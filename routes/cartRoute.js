@@ -1,6 +1,13 @@
 import express from "express";
-import { addToCart, removeFromCart, getCart } from "../controllers/cartController.js";
 import authMiddleware from "../middleware/auth.js";
+import {makeInvoker} from "awilix-express";
+
+const cartController = makeInvoker((container) => ({
+    addToCart: (req, res) => container.cartController.addToCart(req, res),
+    removeFromCart: (req, res) => container.cartController.removeFromCart(req, res),
+    getCart: (req, res) => container.cartController.getCart(req, res),
+}));
+
 
 const cartRouter = express.Router();
 
@@ -66,7 +73,7 @@ const cartRouter = express.Router();
 
 /**
  * @swagger
- * /api/cart/add:
+ * /api/v1/cart/add:
  *   post:
  *     summary: Add an item to the user's cart
  *     tags: [Cart]
@@ -113,12 +120,64 @@ const cartRouter = express.Router();
  *                   example: "Bad request"
  */
 
-cartRouter.post("/add", authMiddleware, addToCart)
+cartRouter.post("/add", authMiddleware, cartController("addToCart"))
 
 /**
  * @swagger
- * /api/cart/remove:
- *   post:
+ * /api/v1/cart/get/{userId}:
+ *   get:
+ *     summary: Fetch the user's cart data
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The id of the user
+ *     responses:
+ *       200:
+ *         description: The cart data was successfully fetched
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartData'
+ *       404:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
+cartRouter.get("/get/:userId", authMiddleware, cartController("getCart"))
+
+/**
+ * @swagger
+ * /api/v1/cart/remove:
+ *   delete:
  *     summary: Remove an item from the user's cart
  *     tags: [Cart]
  *     security:
@@ -164,62 +223,7 @@ cartRouter.post("/add", authMiddleware, addToCart)
  *                   example: "Bad request"
  */
 
-cartRouter.post("/remove", authMiddleware, removeFromCart)
+cartRouter.delete("/remove", authMiddleware, cartController("removeFromCart"))
 
-/**
- * @swagger
- * /api/cart/get:
- *   post:
- *     summary: Fetch the user's cart data
- *     tags: [Cart]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             properties:
- *               userId:
- *                 type: string
- *                 description: The id of the user
- *             example:
- *               userId: 60c72b2f9b1e8e0f8d2e7b12
- *     responses:
- *       200:
- *         description: The cart data was successfully fetched
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/CartData'
- *       400:
- *         description: Not Found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Not Found"
- *       500:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Bad request"
- */
-
-cartRouter.post("/get", authMiddleware, getCart)
 
 export default cartRouter;

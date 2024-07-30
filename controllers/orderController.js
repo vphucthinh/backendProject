@@ -26,10 +26,10 @@ class OrderController {
 
             const session = await this.service.createStripeSession(newOrder, req.body.items);
 
-            res.json({ success: true, session_url: session.url });
+            res.status(200).json({ success: true, session_url: session.url });
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -42,10 +42,10 @@ class OrderController {
     async verifyOrder(req, res) {
         try {
             const result = await this.service.verifyOrderPayment(req.body.orderId, req.body.success);
-            res.json(result);
+            res.status(200).json(result);
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -58,10 +58,10 @@ class OrderController {
     async userOrders(req, res) {
         try {
             const orders = await this.service.getUserOrders(req.body.userId);
-            res.json({ success: true, data: orders });
+            res.status(200).json({ success: true, data: orders });
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -74,10 +74,10 @@ class OrderController {
     async listOrders(req, res) {
         try {
             const orders = await this.service.listOrders();
-            res.json({ success: true, data: orders });
+            res.status(200).json({ success: true, data: orders });
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -90,10 +90,10 @@ class OrderController {
     async updateStatus(req, res) {
         try {
             const result = await this.service.updateOrderStatus(req.body.orderId, req.body.status);
-            res.json(result);
+            res.status(200).json(result);
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 }

@@ -1,152 +1,71 @@
-import express from 'express';
-import UserController from "../controllers/UserController.js";
+import express from "express";
+import authMiddleware from "../middleware/auth.js";
 import {makeInvoker} from "awilix-express";
 
-const api = makeInvoker((container) => ({
-    registerUser: (req, res) => container.userController.registerUser(req, res),
-    loginUser: (req, res) => container.userController.loginUser(req, res),
-}));
-
 const userRouter = express.Router();
+
+const userController = makeInvoker((container) => ({
+    getProfile: (req, res) => container.userController.getProfile(req, res),
+    updateProfile: async (req, res) => container.userController.updateUserById(req, res),
+    deleteProfile: async (req, res) => container.userController.deleteUserById(req, res),
+}));
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     User:
+ *     UserProfile:
  *       type: object
- *       required:
- *         - name
- *         - email
- *         - password
  *       properties:
+ *         _id:
+ *           type: string
+ *           description: The auto-generated id of the user
  *         name:
  *           type: string
- *           description: The user's name
+ *           description: The name of the user
  *         email:
  *           type: string
- *           description: The user's email
- *         password:
- *           type: string
- *           description: The user's password
+ *           format: email
+ *           description: The email of the user
  *         cartData:
  *           type: object
- *           description: The id of item
- *           additionalProperties: true
+ *           description: The cart data of the user
+ *       example:
+ *         _id: 60c72b2f9b1e8e0f8d2e7b12
+ *         name: John Doe
+ *         email: john.doe@example.com
+ *         cartData: {}
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 /**
  * @swagger
- * /api/user/register:
- *   post:
- *     summary: Register a new user
- *     tags: [User]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       200:
- *         description: The user was successfully registered
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 token:
- *                   type: string
- *       400:
- *         description: Invalid User
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid User"
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Unauthorized"
- *       409:
- *         description: User already exist
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "User already exist"
- *       500:
- *         description: Some error happened
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Some error happened"
+ * tags:
+ *   name: Users
+ *   description: The users managing API
  */
-userRouter.post("/register", api('registerUser'));
 
 /**
  * @swagger
- * /api/user/login:
- *   post:
- *     summary: Login an existing user
- *     tags: [User]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 description: The user's email
- *               password:
- *                 type: string
- *                 description: The user's password
+ * /api/v1/user/me:
+ *   get:
+ *     summary: Get the authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: The user was successfully logged in
+ *         description: User profile fetched successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 token:
- *                   type: string
+ *               $ref: '#/components/schemas/UserProfile'
  *       400:
- *         description: Invalid User
+ *         description: Invalid or missing token
  *         content:
  *           application/json:
  *             schema:
@@ -157,7 +76,7 @@ userRouter.post("/register", api('registerUser'));
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "Invalid User"
+ *                   example: "Invalid or missing token"
  *       401:
  *         description: Unauthorized
  *         content:
@@ -172,7 +91,7 @@ userRouter.post("/register", api('registerUser'));
  *                   type: string
  *                   example: "Unauthorized"
  *       500:
- *         description: Some error happened
+ *         description: An error occurred while fetching the user profile
  *         content:
  *           application/json:
  *             schema:
@@ -183,11 +102,127 @@ userRouter.post("/register", api('registerUser'));
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "Some error happened"
+ *                   example: "An error occurred while fetching the user profile"
  */
-userRouter.post("/login", api("loginUser"));
 
 
+userRouter.get("/me", authMiddleware,userController("getProfile") );
+
+/**
+ * @swagger
+ * /api/v1/user/updateUser:
+ *   delete:
+ *     summary: Update the authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserProfile'
+ *       400:
+ *         description: Invalid or missing profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid or missing profile"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: An error occurred while updating the user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while updating the user profile"
+ */
+
+userRouter.delete("/updateUser", authMiddleware, userController("updateProfile"))
+
+/**
+ * @swagger
+ * /api/v1/user/deleteUser:
+ *   put:
+ *     summary: Delete the authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserProfile'
+ *       400:
+ *         description: Invalid or missing profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid or missing profile"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: An error occurred while deleting the user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while deleting the user profile"
+ */
+
+userRouter.put("/deleteUser", authMiddleware, userController("deleteProfile"))
 
 
 export default userRouter;

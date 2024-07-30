@@ -81,6 +81,30 @@ class UserController {
             return res.status(500).json({ success: false, message: "An error occurred while fetching the users" });
         }
     }
+
+    async updateUserById(req, res) {
+        const { id } = req.params;
+
+        try {
+            const updatedUser = await this.service.updateUserProfile( id, req.body);
+            return res.status(200).json({ success: true, data: updatedUser });
+        } catch (error) {
+            console.error("Error during updateUserProfile: ", error.message);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
+    async deleteUserById(req, res) {
+        const { id } = req.params;
+
+        try {
+            const deletedUser = await this.service.deleteUser(id);
+            return res.status(200).json({ success: true, data: deletedUser });
+        } catch (error) {
+            console.error("Error during deleteUserById: ", error.message);
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
 }
 
 export default UserController;
