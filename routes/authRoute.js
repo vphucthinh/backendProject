@@ -1,5 +1,4 @@
 import express from 'express';
-import UserController from "../controllers/UserController.js";
 import {makeInvoker} from "awilix-express";
 
 const authController = makeInvoker((container) => ({
