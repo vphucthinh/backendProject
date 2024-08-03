@@ -71,6 +71,53 @@ const upload = multer({ storage: storage });
 
 /**
  * @swagger
+ * /api/v1/food/list:
+ *   get:
+ *     summary: Returns the list of all the food items
+ *     tags: [Food]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The list of the food items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Food'
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+foodRouter.get("/list", authMiddleware, foodController("listFood"));
+
+/**
+ * @swagger
  * /api/v1/food/add:
  *   post:
  *     summary: Adds a new food item
@@ -80,7 +127,7 @@ const upload = multer({ storage: storage });
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         x-www-form-urlencoded:
  *           schema:
  *             type: object
  *             properties:
@@ -131,53 +178,6 @@ const upload = multer({ storage: storage });
  */
 
 foodRouter.post("/add", authMiddleware, upload.single("image"), foodController("addFood"));
-
-/**
- * @swagger
- * /api/v1/food/list:
- *   get:
- *     summary: Returns the list of all the food items
- *     tags: [Food]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: The list of the food items
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Food'
- *       400:
- *         description: Not Found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Not Found"
- *       500:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Bad request"
- */
-
-foodRouter.get("/list", authMiddleware, foodController("listFood"));
 
 /**
  * @swagger
@@ -240,11 +240,22 @@ foodRouter.delete("/remove", authMiddleware, foodController("removeFood"));
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         x-www-form-urlencoded:
  *           schema:
  *             type: object
  *             properties:
- *               id:
+ *               foodId:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *               category:
  *                 type: string
  *     responses:
  *       200:
@@ -277,6 +288,6 @@ foodRouter.delete("/remove", authMiddleware, foodController("removeFood"));
  *                   example: "Bad request"
  */
 
-foodRouter.put("/remove", authMiddleware, foodController("updateFood"));
+foodRouter.put("/update", authMiddleware, foodController("updateFood"));
 
 export default foodRouter;

@@ -2,20 +2,42 @@ import jwt from "jsonwebtoken";
 
 const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+
+    // Check if the Authorization header is present and starts with 'Bearer '
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(400).json({ success: false, message: "Not Authorized, Login Again" });
+        return res.status(401).json({ success: false, message: "Authorization header missing or improperly formatted" });
     }
 
+    // Extract the token from the Authorization header
     const token = authHeader.split(' ')[1];
-    console.log(token);
 
     try {
-        const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.body.userId = token_decode.id;
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Add relevant decoded data to the request object based on the HTTP method
+        if (req.method === 'GET') {
+            req.query.userId = decoded.id;
+            req.query.username = decoded.username; // Assuming the token contains username
+        } else {
+            req.body.userId = decoded.id;
+            req.body.username = decoded.username; // Assuming the token contains username
+        }
+
+        // Proceed to the next middleware or route handler
         next();
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: "Error" });
+        // Handle specific JWT verification errors
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ success: false, message: "Token expired" });
+        }
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: "Invalid token" });
+        }
+
+        // Handle any other errors
+        console.error("Authentication error:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 

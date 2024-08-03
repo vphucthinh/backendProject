@@ -1,14 +1,14 @@
 {
-  "name": "backend",
+  "name": "backend-nodejs-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "author": "",
+  "author": "DTNS2905",
   "license": "ISC",
   "dependencies": {
     "@withvoid/make-validation": "^1.0.5",

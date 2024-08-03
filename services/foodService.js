@@ -19,16 +19,28 @@ class FoodService extends BaseService {
         let image_filename = `${req.file.filename}`;
 
         try{
-            const food = new this.repo.createAndSave({
-                name: req.body.name,
-                description: req.body.description,
-                price: req.body.price,
-                category: req.body.category,
-                image: image_filename
-            });
+
+            const foundFood = await this.repo.find({name: req.body.name});
+            console.log(foundFood);
+
+            if(foundFood.length === 0){
+                const food = await this.repo.createAndSave({
+                    name: req.body.name,
+                    description: req.body.description,
+                    price: req.body.price,
+                    category: req.body.category,
+                    image: image_filename
+                })
+                res.status(200).json({success: true ,message: "success", food: food});
+            }
+            else {
+                res.status(400).json({success: false ,message:"already exists"});
+            }
+
+
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -41,10 +53,10 @@ class FoodService extends BaseService {
     listFood = async (req, res) => {
         try {
             const foods = await this.repo.find({});
-            res.json({ success: true, data: foods });
+            res.status(200).json({ success: true, data: foods });
         } catch (error) {
             console.log(error);
-            res.json({ success: false, message: "Error" });
+            res.status(500).json({ success: false, message: "Error" });
         }
     }
 
@@ -60,21 +72,21 @@ class FoodService extends BaseService {
              fs.unlink(`uploads/${food.image}`, () => {
              });
 
-             await this.repo.findByIdAndDelete(req.body.id);
-             res.json({success: true, message: "Food Removed"});
+             await this.repo.delete(req.body.id);
+             res.status(200).json({success: true, message: "Food Removed Successfully"});
          } catch (error) {
              console.log(error);
-             res.json({success: false, message: "Error"});
+             res.status(500).json({success: false, message: "Error"});
          }
      }
 
     updateFood = async (req, res) => {
         try {
             // Destructure the id and the update data from the request body
-            const { id, ...updateData } = req.body;
+            const {foodId,...updateData} = req.body;
 
             // Find the food item by ID and update it with the new data
-            const updatedFood = await this.repo.findByIdAndUpdate(id, updateData, {
+            const updatedFood = await this.repo.update(foodId, updateData, {
                 new: true, // Return the updated document
                 runValidators: true // Ensure the update operation runs validators
             });

@@ -102,6 +102,27 @@ const orderRouter = express.Router();
 
 /**
  * @swagger
+ * /api/v1/order/list:
+ *   get:
+ *     summary: Returns the list of all orders
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The list of all orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ */
+
+orderRouter.get("/list", authMiddleware, orderController("listOrders"));
+
+/**
+ * @swagger
  * /api/v1/order/place:
  *   post:
  *     summary: Places a new order
@@ -230,27 +251,6 @@ orderRouter.post("/verify", authMiddleware, orderController("verifyOrder"));
  */
 
 orderRouter.post("/userorders", authMiddleware, orderController("userOrders"));
-
-/**
- * @swagger
- * /api/v1/order/list:
- *   get:
- *     summary: Returns the list of all orders
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: The list of all orders
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Order'
- */
-
-orderRouter.get("/list", authMiddleware, orderController("listOrders"));
 
 /**
  * @swagger

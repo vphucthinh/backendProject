@@ -43,7 +43,13 @@ class FoodController {
      */
     removeFood = async (req, res) => {
         try {
-            await this.service.removeFood(req, res);
+            const isExistFoodId = req.body.id
+            if(isExistFoodId){
+                await this.service.removeFood(req, res);
+            }
+            else {
+                res.status(404).json({ success: false, message: "Not Found" });
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Error" });
@@ -52,7 +58,14 @@ class FoodController {
 
     updateFood = async (req, res) => {
         try {
-            await this.service.updateFood(req, res);
+            const isExistFoodId = req.body.foodId
+            console.log(req.body)
+            if(isExistFoodId) {
+                await this.service.updateFood(req, res);
+            }
+            else {
+                res.status(404).json({ success: false, message: "Not Found" });
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Error" });

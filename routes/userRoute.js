@@ -110,66 +110,8 @@ userRouter.get("/me", authMiddleware,userController("getProfile") );
 
 /**
  * @swagger
- * /api/v1/user/updateUser:
- *   delete:
- *     summary: Update the authenticated user's profile
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: User profile updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UserProfile'
- *       400:
- *         description: Invalid or missing profile
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Invalid or missing profile"
- *       401:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Unauthorized"
- *       500:
- *         description: An error occurred while updating the user profile
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "An error occurred while updating the user profile"
- */
-
-userRouter.delete("/updateUser", authMiddleware, userController("updateProfile"))
-
-/**
- * @swagger
  * /api/v1/user/deleteUser:
- *   put:
+ *   delete:
  *     summary: Delete the authenticated user's profile
  *     tags: [Users]
  *     security:
@@ -222,7 +164,77 @@ userRouter.delete("/updateUser", authMiddleware, userController("updateProfile")
  *                   example: "An error occurred while deleting the user profile"
  */
 
-userRouter.put("/deleteUser", authMiddleware, userController("deleteProfile"))
+userRouter.delete("/deleteUser", authMiddleware, userController("deleteProfile"))
+
+/**
+ * @swagger
+ * /api/v1/user/updateUser:
+ *   put:
+ *     summary: Update the authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 format: email
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserProfile'
+ *       400:
+ *         description: Invalid or missing profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid or missing profile"
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: An error occurred while updating the user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while updating the user profile"
+ */
+
+userRouter.put("/updateUser", authMiddleware, userController("updateProfile"))
 
 
 export default userRouter;

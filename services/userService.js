@@ -15,10 +15,11 @@ class UserService extends BaseService {
      * Utility function to create a JWT token
      *
      * @param {string} id - The user ID
+     * @param {string} username - the username
      * @returns {string} - The JWT token
      */
-     createToken(id) {
-        return jwt.sign({ id: id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+     createToken(id, username) {
+        return jwt.sign({ id: id, username: username}, process.env.JWT_SECRET, { expiresIn: '1d' });
     }
 
     /**
@@ -31,8 +32,6 @@ class UserService extends BaseService {
      */
     async loginUser(email, password) {
         const user = await this.repo.findOne({ email });
-
-        console.log(user);
 
         if (!user) {
             throw new Error("User does not exist");
@@ -91,7 +90,7 @@ class UserService extends BaseService {
         }
 
         // Generate a JWT token
-        const token = this.createToken(newUser._id);
+        const token = this.createToken(newUser._id,name);
         return { newUser, token };
     }
 
@@ -131,11 +130,8 @@ class UserService extends BaseService {
     async updateUserProfile(userId, updateData) {
         try {
             // Update the user profile and return the updated document
-            const profile = await this.repo.findOneAndUpdate(
-                { _id: userId },
-                { $set: updateData },
-                { new: true, runValidators: true }
-            );
+            const profile = await this.repo.update({ _id: userId }, updateData);
+            console.log(profile)
 
             // If the profile is not found, return null
             if (!profile) {
@@ -163,7 +159,7 @@ class UserService extends BaseService {
             }
 
             // Delete the user
-            await this.repo.deleteOne({ _id: id });
+            await this.repo.delete({ _id: id });
 
         } catch (error) {
             console.log(error);

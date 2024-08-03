@@ -154,6 +154,7 @@ class BaseRepository {
         await document.save();
         return document;
     }
+
 }
 
 export default BaseRepository;

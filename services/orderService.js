@@ -15,7 +15,7 @@ class OrderService extends BaseService {
 
     async createOrder(orderData) {
         const newOrder = this.repo.createAndSave(orderData);
-        await this.repo.findByIdAndUpdate(orderData.userId, { cartData: {} });
+        await this.repo.update(orderData.userId, { cartData: {} });
         return newOrder;
     }
 
@@ -54,10 +54,10 @@ class OrderService extends BaseService {
 
     async verifyOrderPayment(orderId, success) {
         if (success === "true") {
-            await this.repo.findByIdAndUpdate(orderId, { payment: true });
+            await this.repo.update(orderId, { payment: true });
             return { success: true, message: "Paid" };
         } else {
-            await this.repo.findByIdAndDelete(orderId);
+            await this.repo.update(orderId);
             return { success: false, message: "Not Paid" };
         }
     }
@@ -73,7 +73,7 @@ class OrderService extends BaseService {
     }
 
     async updateOrderStatus(orderId, status) {
-        await this.repo.findByIdAndUpdate(orderId, { status });
+        await this.repo.update(orderId, { status });
         return { success: true, message: "Status Updated" };
     }
 }

@@ -255,7 +255,7 @@ chatRoomRouter.post('/:roomId/message', authMiddleware, chatRoomController("post
 
 /**
  * @swagger
- * /api/v1/chatroom/{roomId}/mark-read:
+ * /api/v1/chatroom/{roomId}/markRead:
  *   put:
  *     summary: Mark conversation as read by room ID
  *     security:
@@ -295,6 +295,6 @@ chatRoomRouter.post('/:roomId/message', authMiddleware, chatRoomController("post
  *         description: Internal server error
  */
 
-chatRoomRouter.put('/:roomId/mark-read', authMiddleware, chatRoomController("markConversationReadByRoomId"))
+chatRoomRouter.put('/:roomId/markRead', authMiddleware, chatRoomController("markConversationReadByRoomId"))
 
 export default chatRoomRouter;

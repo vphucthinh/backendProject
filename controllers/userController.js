@@ -13,7 +13,6 @@ class UserController {
      */
     async loginUser(req, res) {
         const { email, password } = req.body;
-        console.log(email, password);
 
         try {
             const { user, token } = await this.service.loginUser(email, password);
@@ -83,7 +82,7 @@ class UserController {
     }
 
     async updateUserById(req, res) {
-        const { id } = req.params;
+        const id  = req.body.userId;
 
         try {
             const updatedUser = await this.service.updateUserProfile( id, req.body);
@@ -95,11 +94,11 @@ class UserController {
     }
 
     async deleteUserById(req, res) {
-        const { id } = req.params;
+        const id  = req.body.userId;
 
         try {
             const deletedUser = await this.service.deleteUser(id);
-            return res.status(200).json({ success: true, data: deletedUser });
+            return res.status(200).json({ success: true, message: "User profile deleted successfully" });
         } catch (error) {
             console.error("Error during deleteUserById: ", error.message);
             res.status(500).json({ success: false, message: error.message });

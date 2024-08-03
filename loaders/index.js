@@ -16,6 +16,8 @@ import swaggerUi from "swagger-ui-express";
 import {scopePerRequest} from "awilix-express";
 import container from "./register.js";
 import 'dotenv/config';
+import cors from "cors";
+import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +38,9 @@ class AppLoader {
         app.use(morgan('dev'));
         app.use(compression());
         app.use(express.urlencoded({ extended: false, limit: '20mb' }));
+        app.use(cors());
         app.use(express.json());
+        dotenv.config();
 
 
         // Swagger setup
@@ -80,8 +84,6 @@ class AppLoader {
         if (app.get('env') === 'production') {
             app.set('trust proxy', 1); // trust first proxy
         }
-
-
 
         // Pass app to routes
         routes(app);

@@ -1,32 +1,76 @@
-
 class CartController {
     constructor({ cartService }) {
         this.service = cartService;
     }
     /**
-     * Add items to user cart
+     * Add an item to user cart
      *
      * @param {Object} req - The request object containing userId and itemId
      * @param {Object} res - The response object
      */
-     addToCart = async (req, res) => {
+    addOneToItem = async (req, res) => {
         try {
-           await this.service.addToCart(req, res);
+            const checkedItem = await this.service.checkItemId(req.body.itemId);
+            if(checkedItem) {
+                await this.service.addOneToItem(req, res);
+            }
+            else {
+                res.status(400).json({ success: true, message: "Item does not exist" });
+            }
+
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Error" });
         }
-     }
+    }
+
+    addItemToCart = async (req, res) => {
+        try {
+            const checkedItem = await this.service.checkItemId(req.body.itemId);
+            if(checkedItem) {
+                await this.service.addItemToCart(req, res);
+            }
+            else {
+                res.status(400).json({ success: false, message: "Item does not exist" });
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Error" });
+        }
+
+    }
 
     /**
-     * Remove items from user cart
+     * Remove an item from user cart
      *
      * @param {Object} req - The request object containing userId and itemId
      * @param {Object} res - The response object
      */
-     removeFromCart = async (req, res) => {
+    removeOneFromItem = async (req, res) => {
         try {
-            await this.service.removeFromCart(req, res);
+            const checkedItem = await this.service.checkItemId(req.body.itemId);
+            if(checkedItem) {
+                await this.service.removeOneFromItem(req, res);
+            }
+            else {
+                res.status(400).json({ success: false, message: "Item does not exist" });
+            }
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Error" });
+        }
+    }
+
+    removeItemFromCart = async (req, res) => {
+        try {
+            const checkedItem = await this.service.checkItemId(req.body.itemId);
+            if(checkedItem) {
+                await this.service.removeItemFromCart(req, res);
+            }
+            else {
+                res.status(400).json({ success: false, message: "Item does not exist" });
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json({ success: false, message: "Error" });

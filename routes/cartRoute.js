@@ -3,9 +3,11 @@ import authMiddleware from "../middleware/auth.js";
 import {makeInvoker} from "awilix-express";
 
 const cartController = makeInvoker((container) => ({
-    addToCart: (req, res) => container.cartController.addToCart(req, res),
-    removeFromCart: (req, res) => container.cartController.removeFromCart(req, res),
+    addOneToItem: (req, res) => container.cartController.addOneToItem(req, res),
+    removeOneFromItem: (req, res) => container.cartController.removeOneFromItem(req, res),
     getCart: (req, res) => container.cartController.getCart(req, res),
+    addItemToCart: (req, res) => container.cartController.addItemToCart(req, res),
+    removeItemFromCart: (req, res) => container.cartController.removeItemFromCart(req, res),
 }));
 
 
@@ -73,57 +75,6 @@ const cartRouter = express.Router();
 
 /**
  * @swagger
- * /api/v1/cart/add:
- *   post:
- *     summary: Add an item to the user's cart
- *     tags: [Cart]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CartAction'
- *     responses:
- *       200:
- *         description: The item was successfully added to the cart
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/CartResponse'
- *       400:
- *         description: Not Found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Not Found"
- *       500:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Bad request"
- */
-
-cartRouter.post("/add", authMiddleware, cartController("addToCart"))
-
-/**
- * @swagger
  * /api/v1/cart/get/{userId}:
  *   get:
  *     summary: Fetch the user's cart data
@@ -176,9 +127,9 @@ cartRouter.get("/get/:userId", authMiddleware, cartController("getCart"))
 
 /**
  * @swagger
- * /api/v1/cart/remove:
- *   delete:
- *     summary: Remove an item from the user's cart
+ * /api/v1/cart/addOneToItem:
+ *   post:
+ *     summary: Add an item to the user's cart
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
@@ -190,7 +141,7 @@ cartRouter.get("/get/:userId", authMiddleware, cartController("getCart"))
  *             $ref: '#/components/schemas/CartAction'
  *     responses:
  *       200:
- *         description: The item was successfully removed from the cart
+ *         description: The item was successfully added to the cart
  *         content:
  *           application/json:
  *             schema:
@@ -223,7 +174,169 @@ cartRouter.get("/get/:userId", authMiddleware, cartController("getCart"))
  *                   example: "Bad request"
  */
 
-cartRouter.delete("/remove", authMiddleware, cartController("removeFromCart"))
+cartRouter.post("/addOneToItem", authMiddleware, cartController("addOneToItem"))
+
+/**
+ * @swagger
+ * /api/v1/cart/addItemToCart:
+ *   post:
+ *     summary: Add an item to the user's cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: 66a3af5294fdb2e0250e708a
+ *               itemId:
+ *                 type: string
+ *                 example: 6663e7ad3f0bf570031ed4ef
+ *               quantity:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: The item was successfully added to the cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartResponse'
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+cartRouter.post("/addItemToCart", authMiddleware, cartController("addItemToCart"))
+
+/**
+ * @swagger
+ * /api/v1/cart/removeOneFromItem:
+ *   delete:
+ *     summary: Reduce quantity of item from the user's cart with one unit
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CartAction'
+ *     responses:
+ *       200:
+ *         description: The quantity of item was successfully reduced from the cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartResponse'
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+cartRouter.delete("/removeOneFromItem", authMiddleware, cartController("removeOneFromItem"))
+
+/**
+ * @swagger
+ * /api/v1/cart/removeItemFromCart:
+ *   delete:
+ *     summary: Remove an item from user cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CartAction'
+ *     responses:
+ *       200:
+ *         description: The quantity of item was successfully reduced from the cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartResponse'
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+cartRouter.delete("/removeItemFromCart", authMiddleware, cartController("removeItemFromCart"))
 
 
 export default cartRouter;
