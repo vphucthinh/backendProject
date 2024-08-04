@@ -2,8 +2,8 @@ import baseService from "./baseService.js";
 import paginationMapper from "../mappers/paginationMapper.js";
 
 class ChatMessageService extends baseService {
-    constructor({chatRoomRepository}) {
-        super(chatRoomRepository, "chatMessage", paginationMapper.toPagination);
+    constructor({chatMessageRepository}) {
+        super(chatMessageRepository, "chatMessage", paginationMapper.toPagination);
 
     }
 
@@ -23,6 +23,7 @@ class ChatMessageService extends baseService {
                 postedByUser,
                 readByRecipients: { readByUserId: postedByUser }
             });
+            console.log(post);
             const aggregate = await this.repo.aggregate([
                 // get post where _id = post._id
                 { $match: { _id: post._id } },
@@ -76,7 +77,8 @@ class ChatMessageService extends baseService {
                     }
                 }
             ]);
-            return aggregate[0];
+            console.log(aggregate)
+            return post;
         } catch (error) {
             throw error;
         }

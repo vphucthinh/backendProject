@@ -20,7 +20,7 @@ class ChatRoomService extends baseService {
                 return {
                     isNew: false,
                     message: 'retrieving an old chat room',
-                    chatRoomId: availableRoom._doc._id,
+                    chatRoomId: availableRoom._id,
                 };
             }
 
@@ -28,7 +28,7 @@ class ChatRoomService extends baseService {
             return {
                 isNew: true,
                 message: 'creating a new chatroom',
-                chatRoomId: newRoom._doc._id,
+                chatRoomId: newRoom._id,
             };
         } catch (error) {
             console.log('error on start chat method', error);

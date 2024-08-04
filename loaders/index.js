@@ -1,6 +1,3 @@
-/**
- * Module dependencies.
- */
 import http from 'http';
 import express from 'express';
 import morgan from 'morgan';
@@ -11,13 +8,14 @@ import { config } from '../config/config.js';
 import { routes } from '../routes/router.js';
 import { normalizePort } from '../utils/port.js';
 import { fileURLToPath } from 'url';
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-import {scopePerRequest} from "awilix-express";
-import container from "./register.js";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { scopePerRequest } from 'awilix-express';
+import container from './register.js';
 import 'dotenv/config';
-import cors from "cors";
-import dotenv from "dotenv";
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { Server } from 'socket.io';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,14 +24,6 @@ class AppLoader {
     constructor() {
         const app = express();
 
-
-        // Setup error handling, this must be after all other middleware
-        app.use(AppLoader.errorHandler);
-
-        const srcDir = path.basename(path.dirname(__dirname));
-        const baseDir = path.basename(path.dirname(srcDir));
-
-
         // Set up middleware
         app.use(morgan('dev'));
         app.use(compression());
@@ -41,7 +31,6 @@ class AppLoader {
         app.use(cors());
         app.use(express.json());
         dotenv.config();
-
 
         // Swagger setup
         const swaggerOptions = {
@@ -77,7 +66,6 @@ class AppLoader {
         const swaggerDocs = swaggerJsdoc(swaggerOptions);
         app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
         // Dependency injection
         app.use(scopePerRequest(container));
 
@@ -91,29 +79,45 @@ class AppLoader {
         // Create HTTP server.
         this.server = http.createServer(app);
 
+        // Set up Socket.io
+        this.io = new Server(this.server, {
+            cors: {
+                origin: '*', // Allow all origins (adjust this for security in production)
+                methods: ['GET', 'POST'],
+            },
+        });
+
+        // Listen for connection events
+        this.io.on('connection', (socket) => {
+            console.log(`User connected: ${socket.id}`);
+
+            socket.on('disconnect', () => {
+                console.log(`User disconnected: ${socket.id}`);
+            });
+
+            // Add your custom event listeners here
+        });
+
+        // Make Socket.io globally available
+        global.io = this.io;
+
         // Start application
         const port = normalizePort(config.port);
         this.server.listen(port, "0.0.0.0");
         this.server.on('error', AppLoader.onError);
         this.server.on('listening', AppLoader.onListening);
+
+        // Setup error handling, this must be after all other middleware
+        app.use(AppLoader.errorHandler);
     }
 
     get Server() {
         return this.server;
     }
 
-    /**
-     * @description Default error handler to be used with express
-     * @param error Error object
-     * @param req {object} Express req object
-     * @param res {object} Express res object
-     * @param next {function} Express next object
-     * @returns {*}
-     */
     static errorHandler(error, req, res, next) {
         let parsedError;
 
-        // Attempt to gracefully parse error object
         try {
             if (error && typeof error === 'object') {
                 parsedError = JSON.stringify(error);
@@ -124,10 +128,8 @@ class AppLoader {
             logger.error(e);
         }
 
-        // Log the original error
         logger.error(parsedError);
 
-        // If response is already sent, don't attempt to respond to client
         if (res.headersSent) {
             return next(error);
         }
@@ -138,10 +140,6 @@ class AppLoader {
         });
     }
 
-    /**
-     * Event listener for HTTP server "error" event.
-     */
-
     static onError(error) {
         if (error.syscall !== 'listen') {
             throw error;
@@ -151,7 +149,6 @@ class AppLoader {
             ? `Pipe ${port}`
             : `Port ${port}`;
 
-        // handle specific listen errors with friendly messages
         switch (error.code) {
             case 'EACCES':
                 logger.error(`${bind} requires elevated privileges`);
@@ -165,14 +162,10 @@ class AppLoader {
         }
     }
 
-    /**
-     * Event listener for HTTP server "listening" event.
-     */
-
     static onListening() {
         logger.info(`Express running, now listening on port ${config.port}`);
         console.log(`Express running, now listening on port ${config.port}`);
     }
 }
 
-export default AppLoader
+export default AppLoader;

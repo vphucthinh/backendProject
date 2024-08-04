@@ -1,6 +1,4 @@
 import express from 'express';
-// controllers
-import ChatRoomController from '../controllers/chatRoomController.js';
 import authMiddleware from "../middleware/auth.js";
 import {makeInvoker} from "awilix-express";
 
@@ -268,15 +266,6 @@ chatRoomRouter.post('/:roomId/message', authMiddleware, chatRoomController("post
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userId:
- *                 type: string
  *     responses:
  *       200:
  *         description: Successful response

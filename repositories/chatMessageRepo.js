@@ -1,5 +1,5 @@
 import BaseRepository from './baseRepo.js';
-import chatMessageModel from '../models/chatRoomModel.js'
+import chatMessageModel from '../models/chatMessageModel.js'
 
 class ChatMessageRepository extends BaseRepository {
     constructor() {

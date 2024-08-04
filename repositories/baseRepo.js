@@ -155,6 +155,18 @@ class BaseRepository {
         return document;
     }
 
+    /**
+     * Update multiple documents in the collection.
+     * @param {Object} filter - The filter to match the documents.
+     * @param {Object} update - The update operations to apply.
+     * @param {Object} options - Optional settings (e.g., { multi: true }).
+     * @returns {Promise} - A promise that resolves to the result of the update operation.
+     */
+    async updateMany(filter, update, options = {}) {
+        const result = await this.model.updateMany(filter, update, options);
+        return result;
+    }
+
 }
 
 export default BaseRepository;
