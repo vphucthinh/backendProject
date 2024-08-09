@@ -27,6 +27,7 @@ This is a Node.js backend API built with Express. It includes various features l
    ```bash
    git clone https://github.com/vphucthinh/backendProject.git
    cd backendProject
+   ```
    
 2.Install the dependencies:
 
