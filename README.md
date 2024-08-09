@@ -29,11 +29,17 @@ This is a Node.js backend API built with Express. It includes various features l
    cd backendProject
    
 2.Install the dependencies:
-npm install
 
-3.
+   ```bash
+   npm install
+   ```
+3
 a.Run the development server:
-npm run dev
+   ```bash
+   npm run dev
+   ```
 
 b.start the application in production mode:
-npm start
+   ```bash
+   npm start
+   ```
