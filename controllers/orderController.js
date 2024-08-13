@@ -17,19 +17,32 @@ class OrderController {
      */
     async placeOrder(req, res) {
         try {
+            // Validate the request body
+            const { userId, items, amount, address } = req.body;
+
+            if (!userId || !items || !amount || !address) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Missing required fields: userId, items, amount, or address"
+                });
+            }
+
+            // Create a new order
             const newOrder = await this.service.createOrder({
-                userId: req.body.userId,
-                items: req.body.items,
-                amount: req.body.amount,
-                address: req.body.address
+                userId,
+                items,
+                amount,
+                address
             });
 
-            const session = await this.service.createStripeSession(newOrder, req.body.items);
+            // Create a Stripe session
+            const session = await this.service.createStripeSession(newOrder, items);
 
+            // Return the session URL
             res.status(200).json({ success: true, session_url: session.url });
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ success: false, message: "Error" });
+            console.error(error);
+            res.status(500).json({ success: false, message: "An error occurred while placing the order" });
         }
     }
 
