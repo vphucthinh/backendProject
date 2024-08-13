@@ -16,6 +16,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { Server } from 'socket.io';
+import { v2 as cloudinary } from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +29,7 @@ class AppLoader {
         app.use(morgan('dev'));
         app.use(compression());
         app.use(express.urlencoded({ extended: false, limit: '20mb' }));
-        app.use(cors());
+        app.use(cors({ origin: '*' }));  // Allow all origins
         app.use(express.json());
         dotenv.config();
 

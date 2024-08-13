@@ -8,6 +8,7 @@ const foodController = makeInvoker((container) => ({
     removeFood: (req, res) => container.foodController.removeFood(req, res),
     listFood: (req, res) => container.foodController.listFood(req, res),
     updateFood: (req, res) => container.foodController.updateFood(req, res),
+    listSomeFood: (req, res) => container.foodController.listSomeFood(req, res),
 }));
 
 const foodRouter = express.Router();
@@ -115,6 +116,53 @@ const upload = multer({ storage: storage });
  */
 
 foodRouter.get("/list", authMiddleware, foodController("listFood"));
+
+/**
+ * @swagger
+ * /api/v1/food/listSome:
+ *   get:
+ *     summary: Returns the list of all the food items with pagination
+ *     tags: [Food]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The list of the food items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Food'
+ *       400:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not Found"
+ *       500:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Bad request"
+ */
+
+foodRouter.get("/listSome", authMiddleware, foodController("listSomeFood"));
 
 /**
  * @swagger

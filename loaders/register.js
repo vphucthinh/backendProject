@@ -18,6 +18,8 @@ import FoodController from "../controllers/foodController.js";
 import CartController from "../controllers/cartController.js";
 import ChatRoomController from "../controllers/chatRoomController.js";
 
+import PaginationMapper from "../mappers/paginationMapper.js";
+
 
 const container = createContainer({
     injectionMode: InjectionMode.PROXY,
@@ -35,7 +37,7 @@ container.register({
 
 // Mapper register
 container.register({
-
+    paginationMapper: asClass(PaginationMapper).singleton(),
 });
 
 // Service register
@@ -56,7 +58,6 @@ container.register({
     foodController: asClass(FoodController).singleton(),
     cartController: asClass(CartController).singleton(),
     chatRoomController: asClass(ChatRoomController).singleton(),
-
 });
 
 export default container

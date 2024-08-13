@@ -35,6 +35,31 @@ class FoodController {
         }
     }
 
+    async uploadProfileImage(req, res) {
+        try {
+            const filePath = req.file.path; // Assuming you're using multer for file uploads
+            const imageUrl = await this.service.uploadImage(filePath);
+            res.status(200).json({ imageUrl });
+        } catch (error) {
+            res.status(500).json({ message: 'File upload failed', error });
+        }
+    }
+
+    /**
+     * List all food items with pagination
+     *
+     * @param {Object} req - The request object
+     * @param {Object} res - The response object
+     */
+    listSomeFood = async (req, res) => {
+        try {
+            await this.service.listSomeFood(req, res);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Error" });
+        }
+    }
+
     /**
      * Remove a food item
      *

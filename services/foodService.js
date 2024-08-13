@@ -1,7 +1,7 @@
 import BaseService from "./baseService.js";
 import fs from "fs";
 import paginationMapper from "../mappers/paginationMapper.js";
-import foodModel from "../models/foodModel.js";
+import cloudinary from '../config/cloudinaryConfig.js';
 
 class FoodService extends BaseService {
     constructor({ foodRepository }) {
@@ -16,33 +16,35 @@ class FoodService extends BaseService {
      * @param {Object} res - The response object
      */
     addFood = async (req, res) => {
-        let image_filename = `${req.file.filename}`;
+        try {
+            // Upload image to Cloudinary
+            const imageUploadResponse = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'uploads', // Optional: Folder in Cloudinary where images will be stored
+            });
 
-        try{
-
-            const foundFood = await this.repo.find({name: req.body.name});
+            // Check if food already exists
+            const foundFood = await this.repo.find({ name: req.body.name });
             console.log(foundFood);
 
-            if(foundFood.length === 0){
+            if (foundFood.length === 0) {
+                // Create and save new food item with Cloudinary image URL
                 const food = await this.repo.createAndSave({
                     name: req.body.name,
                     description: req.body.description,
                     price: req.body.price,
                     category: req.body.category,
-                    image: image_filename
-                })
-                res.status(200).json({success: true ,message: "success", food: food});
-            }
-            else {
-                res.status(400).json({success: false ,message:"already exists"});
-            }
+                    image: imageUploadResponse.secure_url // Use Cloudinary URL instead of local filename
+                });
 
-
+                res.status(200).json({ success: true, message: "Success", food: food });
+            } else {
+                res.status(400).json({ success: false, message: "Food item already exists" });
+            }
         } catch (error) {
-            console.log(error);
-            res.status(500).json({ success: false, message: "Error" });
+            console.error('Error adding food:', error);
+            res.status(500).json({ success: false, message: "Internal server error", error });
         }
-    }
+    };
 
     /**
      * List all food items
@@ -59,6 +61,29 @@ class FoodService extends BaseService {
             res.status(500).json({ success: false, message: "Error" });
         }
     }
+
+    /**
+     * List all food items with pagination
+     *
+     * @param {Object} req - The request object
+     * @param {Object} res - The response object
+     */
+
+    listSomeFood = async (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.perPage) || 10;
+        const sort = req.query.sort ? JSON.parse(req.query.sort) : { _id: 1 }; // Optionally get sorting from query params
+
+        try {
+            const paginatedResult = await this.getPage(page, perPage, sort);
+            res.status(200).json({ success: true,  paginatedResult });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ success: false, message: "Error" });
+        }
+    }
+
+
 
     /**
      * Remove a food item
@@ -104,6 +129,11 @@ class FoodService extends BaseService {
             res.status(500).json({ message: 'Server error' });
         }
     };
+     uploadImage = async (filePath) => {
+        return await cloudinary.uploader.upload(filePath, {
+            folder: 'uploads',
+        });
+    }
 
 }
 
