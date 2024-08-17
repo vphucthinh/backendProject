@@ -63,7 +63,7 @@ class OrderService extends BaseService {
     }
 
     async getUserOrders(userId) {
-        const orders = await this.repo.findById( userId );
+        const orders = await this.repo.find({ userId: userId });
         return orders;
     }
 
