@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 class OrderService extends BaseService {
     constructor({orderRepository}) {
         super(orderRepository, 'order', paginationMapper.toPagination);
-        this.frontend_url = process.env.Client_URI || "http://localhost:5174";
+        this.frontend_url = process.env.Client_URI || "http://localhost:5173";
         this.repo = orderRepository;
     }
 
